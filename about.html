@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>About | Bruce Weygandt</title>
+<meta name="description" content="Bruce Weygandt, Forward Deployed Engineer at Paramify. Notes on FedRAMP 20x, CMMC, evidence fetchers, and validators.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script>(function(){var t=null;try{t=localStorage.getItem('bw-theme')}catch(e){}
+if(t!=='light'&&t!=='dark'){t=window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}
+document.documentElement.setAttribute('data-theme',t)})();</script>
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+<header class="site-head"><div class="wrap">
+  <a class="name" href="index.html">Bruce Weygandt</a>
+  <nav aria-label="Site"><a href="index.html">Home</a><a href="blog/index.html">Blog</a><a href="about.html" aria-current="page">About</a><button class="theme-toggle" type="button" aria-label="Switch to dark mode" title="Switch theme">
+<svg class="i-moon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5a8.5 8.5 0 1 0 11 11z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+<svg class="i-sun" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+</button></nav>
+</div></header>
+<main>
+<div class="wrap">
+<h1>About</h1>
+<p>I'm Bruce. I work at Paramify as a Forward Deployed Engineer, on the team since November 2025 and full-time in this role since September 2026.</p>
+<div class="split" role="img" aria-label="About two-thirds engineering, one-third client advisory">
+  <div class="bar"><span></span><span></span></div>
+  <div class="legend"><span>Engineering, about two-thirds</span><span>Client advisory, about one-third</span></div>
+</div>
+<p>On the engineering side I build evidence fetchers in Python, write the regex validators that turn their JSON into pass or fail, and build internal tools on the Claude API. On the advisory side I work with clients on readiness and evidence strategy, alongside 3PAOs and the FedRAMP PMO.</p>
+<p>I came to security from translation, and the two are closer than they sound. A requirement written for one audience has to become exact for another. In compliance, that means a control statement an assessor will accept, and the API call that proves it.</p>
+
+<h2>What I work with</h2>
+<dl class="facts">
+  <dt>Frameworks</dt><dd>FedRAMP 20x, CMMC Level 2, NIST 800-53 Rev 5, NIST CSF 2.0, SOC 2, ISO 27001, ISMAP, NIST AI RMF, ISO 42001</dd>
+  <dt>Engineering</dt><dd>Python, REST and Graph APIs, regex validators, JSON evidence schemas, Google Apps Script, React, GitLab CI, Claude API, MCP</dd>
+  <dt>Platforms</dt><dd>AWS GovCloud, Azure Government, Microsoft 365 GCC High, Entra ID, Purview, Google Workspace, Qualys, Fortify, SentinelOne, Grype</dd>
+</dl>
+
+<h2>Credentials</h2>
+<dl class="facts">
+  <dt>CompTIA Security+</dt><dd>Held</dd>
+  <dt>ISACA CISA</dt><dd>In progress</dd>
+  <dt>AWS Solutions Architect Associate</dt><dd>In preparation</dd>
+  <dt>ISO 27001 Lead Auditor</dt><dd>Training completed</dd>
+  <dt>Languages</dt><dd>English and Japanese, native-level in both</dd>
+</dl>
+
+<h2>Get in touch</h2>
+<p>If a post was useful, or you think I got something wrong, I'd like to hear about it: <a href="mailto:bruce.weyg@gmail.com">bruce.weyg@gmail.com</a> or <a href="https://linkedin.com/in/bruce-weygandt" target="_blank" rel="noopener">LinkedIn</a>.</p>
+</div>
+</main>
+<footer class="site-foot"><div class="wrap">
+  <span>© 2026 Bruce Weygandt</span>
+  <a href="mailto:bruce.weyg@gmail.com">email</a>
+  <a href="https://linkedin.com/in/bruce-weygandt" target="_blank" rel="noopener">linkedin</a>
+</div></footer>
+<script>(function(){
+var root=document.documentElement, btns=document.querySelectorAll('.theme-toggle');
+function sync(){var dark=root.getAttribute('data-theme')==='dark';
+  btns.forEach(function(b){b.setAttribute('aria-label',dark?'Switch to light mode':'Switch to dark mode');b.setAttribute('aria-pressed',dark?'true':'false');});}
+btns.forEach(function(b){b.addEventListener('click',function(){
+  var next=root.getAttribute('data-theme')==='dark'?'light':'dark';
+  root.setAttribute('data-theme',next);try{localStorage.setItem('bw-theme',next)}catch(e){}sync();});});
+sync();})();</script>
+
+</body>
+</html>
