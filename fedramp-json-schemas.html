@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Working with FedRAMP&#x27;s new JSON schemas | Bruce Weygandt</title>
+<meta name="description" content="Fitting change requests into the Significant Change Notification schema, and building a viewer for Security Decision Records.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script>(function(){var t=null;try{t=localStorage.getItem('bw-theme')}catch(e){}
+if(t!=='light'&&t!=='dark'){t=window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}
+document.documentElement.setAttribute('data-theme',t)})();</script>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<header class="site-head"><div class="wrap">
+  <a class="name" href="../index.html">Bruce Weygandt</a>
+  <nav aria-label="Site"><a href="../index.html">Home</a><a href="../blog/index.html" aria-current="page">Blog</a><a href="../about.html">About</a><button class="theme-toggle" type="button" aria-label="Switch to dark mode" title="Switch theme">
+<svg class="i-moon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5a8.5 8.5 0 1 0 11 11z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+<svg class="i-sun" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+</button></nav>
+</div></header>
+<main>
+<div class="wrap"><article>
+<a class="back" href="../blog/index.html">All posts</a>
+<h1>Working with FedRAMP's new JSON schemas</h1>
+<p class="meta">FedRAMP 20x, Change management, React. 2 min read.</p>
+<p class="dek-lead">Fitting change requests into the Significant Change Notification schema, and building a viewer for Security Decision Records.</p>
+
+<p>FedRAMP 20x published JSON schemas for significant change notifications (SCN) and security decision records (SDR). Both are a real improvement for automation. Neither fit neatly into how teams were already working.</p>
+<h2>Change requests</h2>
+<p>Change requests lived in a markdown merge request template. I compared each field against the SCN schema and found nine fields the template had nowhere to put.</p>
+<figure><pre class="code"><code>certificationPackageOverviewUri
+changeType
+changeTypeExplanation
+assessorName
+relatedVulnerability
+customerImpact
+planAndTimeline.plannedCompletion
+planAndTimeline.milestones[]
+impactedControls[]</code></pre><figcaption>Schema fields the old template had no place for.</figcaption></figure>
+<p>I rewrote the template with collapsible sections so engineers only open the parts their change needs. A long flat form would have been skipped. The next step is a small script that turns a completed merge request into valid SCN JSON.</p>
+<h2>A viewer for SDR files</h2>
+<p>An SDR describes a system boundary in JSON, which is great for machines and hard for reviewers. I built a React dashboard that turns one into something readable: systems by type and tier, encryption posture, a swim-lane boundary diagram, ports and protocols, and a control cross-reference.</p>
+<p>Reviewers drag a file onto the page. It's checked against the schema structure first, and every number on screen is calculated from the file when it loads, so nothing goes stale.</p>
+<p>The control cross-reference also separates controls the SDR fully supports, like boundary and encryption, from ones it only partly supports. I didn't want the dashboard to suggest more than the data shows.</p>
+
+<nav class="pn" aria-label="More posts"><a class="prev" href="../blog/scanner-exports-that-import-cleanly.html"><small>Previous</small><strong>Notes from making scanner exports import cleanly</strong></a><a class="next" href="../blog/a-knowledge-base-that-audits-itself.html"><small>Next</small><strong>A knowledge base that audits itself</strong></a></nav>
+</article></div>
+</main>
+<footer class="site-foot"><div class="wrap">
+  <span>© 2026 Bruce Weygandt</span>
+  <a href="mailto:bruce.weyg@gmail.com">email</a>
+  <a href="https://linkedin.com/in/bruce-weygandt" target="_blank" rel="noopener">linkedin</a>
+</div></footer>
+<script>(function(){
+var root=document.documentElement, btns=document.querySelectorAll('.theme-toggle');
+function sync(){var dark=root.getAttribute('data-theme')==='dark';
+  btns.forEach(function(b){b.setAttribute('aria-label',dark?'Switch to light mode':'Switch to dark mode');b.setAttribute('aria-pressed',dark?'true':'false');});}
+btns.forEach(function(b){b.addEventListener('click',function(){
+  var next=root.getAttribute('data-theme')==='dark'?'light':'dark';
+  root.setAttribute('data-theme',next);try{localStorage.setItem('bw-theme',next)}catch(e){}sync();});});
+sync();})();</script>
+
+</body>
+</html>

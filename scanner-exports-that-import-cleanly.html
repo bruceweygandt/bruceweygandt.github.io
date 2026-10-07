@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Notes from making scanner exports import cleanly | Bruce Weygandt</title>
+<meta name="description" content="What I found building intake presets for Fortify, Qualys, Grype, and SentinelOne.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script>(function(){var t=null;try{t=localStorage.getItem('bw-theme')}catch(e){}
+if(t!=='light'&&t!=='dark'){t=window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}
+document.documentElement.setAttribute('data-theme',t)})();</script>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<header class="site-head"><div class="wrap">
+  <a class="name" href="../index.html">Bruce Weygandt</a>
+  <nav aria-label="Site"><a href="../index.html">Home</a><a href="../blog/index.html" aria-current="page">Blog</a><a href="../about.html">About</a><button class="theme-toggle" type="button" aria-label="Switch to dark mode" title="Switch theme">
+<svg class="i-moon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5a8.5 8.5 0 1 0 11 11z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+<svg class="i-sun" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+</button></nav>
+</div></header>
+<main>
+<div class="wrap"><article>
+<a class="back" href="../blog/index.html">All posts</a>
+<h1>Notes from making scanner exports import cleanly</h1>
+<p class="meta">Vulnerability management, SAST and DAST, ConMon. 2 min read.</p>
+<p class="dek-lead">What I found building intake presets for Fortify, Qualys, Grype, and SentinelOne.</p>
+
+<p>During onboarding, clients were spending time reshaping scanner exports before we could use them. My job was to build File Intake Presets so they could upload whatever their tools already produce. Most of the work turned out to be learning where each format hides things.</p>
+<h2>How I worked</h2>
+<p>For every format, I parsed real sample files in Python before opening the preset wizard, so each field mapping was checked against actual data rather than documentation. Where no public sample existed, I generated synthetic fixtures so the preset could still be tested without anyone's real findings.</p>
+<h2>Fortify</h2>
+<p>I built four OpenText Fortify presets: SAST in XML, FPR, and CSV, and DAST in XML. Two things surprised me. The standard ReportGenerator XML only emits one issue per category, so it quietly undercounts unless you use the all-issues template. And Fortify CSV isn't a scanner output at all. It only exists downstream of Software Security Center, which flips the usual assumption that CSV is the easy option.</p>
+<h2>Qualys</h2>
+<p>In the Qualys API XML, the detection rows and the details that matter, like severity, title, and CVE, live in separate branches joined by an ID. A preset can't reach across that join, so I ruled the format out and built on an export that keeps everything on one row.</p>
+<h2>Grype and SentinelOne</h2>
+<p>Container and endpoint findings were the easier part. For Grype I went a step further and helped build a CI/CD pipeline that sends scan results to Paramify automatically, so nobody has to remember to upload them.</p>
+<figure><pre class="code"><code>Vulnerability / Application / OpenText
+  OpenText - Application - SAST Scan (XML)
+  OpenText - Application - SAST Scan (FPR)
+  OpenText - Application - SAST Scan (CSV)
+  OpenText - Application - DAST Scan (XML)
+
+Vulnerability / Infrastructure / Qualys
+  Qualys - Infrastructure - VM Scan (CSV)</code></pre><figcaption>Every preset follows one naming pattern so clients can find the right one.</figcaption></figure>
+<h2>Informational findings</h2>
+<p>Every scanner reports some findings that aren't vulnerabilities. Those are filtered out or mapped to a tier with no remediation clock, so they don't inflate POA&amp;M counts.</p>
+
+<nav class="pn" aria-label="More posts"><a class="prev" href="../blog/one-set-of-controls-three-frameworks.html"><small>Previous</small><strong>One set of controls, three frameworks</strong></a><a class="next" href="../blog/fedramp-json-schemas.html"><small>Next</small><strong>Working with FedRAMP's new JSON schemas</strong></a></nav>
+</article></div>
+</main>
+<footer class="site-foot"><div class="wrap">
+  <span>© 2026 Bruce Weygandt</span>
+  <a href="mailto:bruce.weyg@gmail.com">email</a>
+  <a href="https://linkedin.com/in/bruce-weygandt" target="_blank" rel="noopener">linkedin</a>
+</div></footer>
+<script>(function(){
+var root=document.documentElement, btns=document.querySelectorAll('.theme-toggle');
+function sync(){var dark=root.getAttribute('data-theme')==='dark';
+  btns.forEach(function(b){b.setAttribute('aria-label',dark?'Switch to light mode':'Switch to dark mode');b.setAttribute('aria-pressed',dark?'true':'false');});}
+btns.forEach(function(b){b.addEventListener('click',function(){
+  var next=root.getAttribute('data-theme')==='dark'?'light':'dark';
+  root.setAttribute('data-theme',next);try{localStorage.setItem('bw-theme',next)}catch(e){}sync();});});
+sync();})();</script>
+
+</body>
+</html>

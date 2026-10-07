@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>A knowledge base that audits itself | Bruce Weygandt</title>
+<meta name="description" content="Building internal tools on the Claude API, and the guardrails I put around them.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script>(function(){var t=null;try{t=localStorage.getItem('bw-theme')}catch(e){}
+if(t!=='light'&&t!=='dark'){t=window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}
+document.documentElement.setAttribute('data-theme',t)})();</script>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<header class="site-head"><div class="wrap">
+  <a class="name" href="../index.html">Bruce Weygandt</a>
+  <nav aria-label="Site"><a href="../index.html">Home</a><a href="../blog/index.html" aria-current="page">Blog</a><a href="../about.html">About</a><button class="theme-toggle" type="button" aria-label="Switch to dark mode" title="Switch theme">
+<svg class="i-moon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5a8.5 8.5 0 1 0 11 11z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+<svg class="i-sun" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+</button></nav>
+</div></header>
+<main>
+<div class="wrap"><article>
+<a class="back" href="../blog/index.html">All posts</a>
+<h1>A knowledge base that audits itself</h1>
+<p class="meta">Claude API, Automation, AI governance. 2 min read.</p>
+<p class="dek-lead">Building internal tools on the Claude API, and the guardrails I put around them.</p>
+
+<p>Sales and customer teams kept answering the same product and compliance questions in Slack, and useful feedback from customer calls kept getting lost. I built a few internal tools to fix that, and wrote a governance proposal so tools like them have clear limits.</p>
+<h2>The KB Bot</h2>
+<p>When a teammate reacts to a good answer in Slack, the bot captures it and sends it for human review. Approved answers are used to reply to repeat questions in chosen channels, and they're written back into the source documents. Nothing reaches a document without a person approving it.</p>
+<p>Every write-back is recorded along with where it went, so retiring an entry removes its content from every file it touched. Knowing changes could be undone made people much more willing to approve them.</p>
+<h2>Making the audit predictable</h2>
+<p>Knowledge bases rot. My first version flagged entries that hadn't been checked in 30 days, which meant rarely used entries were never looked at. I replaced it with a rotation: each entry is hashed into one of four buckets, and each Monday covers one bucket. Every entry gets reviewed once a month, and each session summary links back to the original Slack messages.</p>
+<figure><pre class="code"><code>// Each knowledge-base entry always lands in the same weekly bucket
+function entryBucket_(entryId) {
+  const digest = Utilities.computeDigest(
+    Utilities.DigestAlgorithm.MD5, String(entryId));
+  return Math.abs(digest[0]) % 4;
+}
+
+// Week of the month decides which bucket is audited this Monday
+function currentAuditBucket_(date) {
+  return Math.min(Math.floor((date.getDate() - 1) / 7), 3);
+}</code></pre><figcaption>Simplified from the Apps Script source.</figcaption></figure>
+<h2>Listening to customer calls</h2>
+<p>I also built skills that scan recent customer and prospect calls for bugs and feature requests, remove duplicates, and post each one to the right Slack channel with a count of how often it's been asked for. They run on a schedule without anyone starting them.</p>
+<h2>Guardrails</h2>
+<p>Tools like these touch real company data, so I wrote an AI governance proposal for leadership aligned to NIST AI RMF and ISO 42001. It covers orchestration, evaluation, and how to choose pilot agents, with a 44-criterion rubric across 17 categories. The core rule is the same one I use for evidence fetchers: each agent gets only the access its task needs.</p>
+
+<nav class="pn" aria-label="More posts"><a class="prev" href="../blog/fedramp-json-schemas.html"><small>Previous</small><strong>Working with FedRAMP's new JSON schemas</strong></a></nav>
+</article></div>
+</main>
+<footer class="site-foot"><div class="wrap">
+  <span>© 2026 Bruce Weygandt</span>
+  <a href="mailto:bruce.weyg@gmail.com">email</a>
+  <a href="https://linkedin.com/in/bruce-weygandt" target="_blank" rel="noopener">linkedin</a>
+</div></footer>
+<script>(function(){
+var root=document.documentElement, btns=document.querySelectorAll('.theme-toggle');
+function sync(){var dark=root.getAttribute('data-theme')==='dark';
+  btns.forEach(function(b){b.setAttribute('aria-label',dark?'Switch to light mode':'Switch to dark mode');b.setAttribute('aria-pressed',dark?'true':'false');});}
+btns.forEach(function(b){b.addEventListener('click',function(){
+  var next=root.getAttribute('data-theme')==='dark'?'light':'dark';
+  root.setAttribute('data-theme',next);try{localStorage.setItem('bw-theme',next)}catch(e){}sync();});});
+sync();})();</script>
+
+</body>
+</html>

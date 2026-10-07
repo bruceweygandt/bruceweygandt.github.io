@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CMMC Level 2, one assessment objective at a time | Bruce Weygandt</title>
+<meta name="description" content="Building about 320 capabilities for a client on Microsoft 365 GCC High, and why the extra records were worth it.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script>(function(){var t=null;try{t=localStorage.getItem('bw-theme')}catch(e){}
+if(t!=='light'&&t!=='dark'){t=window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}
+document.documentElement.setAttribute('data-theme',t)})();</script>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<header class="site-head"><div class="wrap">
+  <a class="name" href="../index.html">Bruce Weygandt</a>
+  <nav aria-label="Site"><a href="../index.html">Home</a><a href="../blog/index.html" aria-current="page">Blog</a><a href="../about.html">About</a><button class="theme-toggle" type="button" aria-label="Switch to dark mode" title="Switch theme">
+<svg class="i-moon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5a8.5 8.5 0 1 0 11 11z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+<svg class="i-sun" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+</button></nav>
+</div></header>
+<main>
+<div class="wrap"><article>
+<a class="back" href="../blog/index.html">All posts</a>
+<h1>CMMC Level 2, one assessment objective at a time</h1>
+<p class="meta">CMMC, Microsoft 365 GCC High, Microsoft Graph. 2 min read.</p>
+<p class="dek-lead">Building about 320 capabilities for a client on Microsoft 365 GCC High, and why the extra records were worth it.</p>
+
+<p>CMMC assessors don't grade a practice as a whole. They look at each assessment objective inside it, and a narrative that reads well at the practice level can still leave one of those objectives unanswered. That gap is where findings come from.</p>
+<p>For a client running Microsoft 365 GCC High, I built their Level 2 coverage at the objective level: one Solution Capability per assessment objective, about 320 in total, each written against how the client actually configured their environment.</p>
+<h2>The identifier problem</h2>
+<p>Partway through, I noticed Microsoft Purview still reports CMMC controls under the legacy v1.02 identifiers. The tool and the assessment were describing the same controls with different numbers. I wrote a 110-row crosswalk from the legacy IDs to the current ones so nobody has to translate in their head during an assessment.</p>
+<h2>Evidence from where the control lives</h2>
+<p>Where the platform enforces a practice, I tried to automate the evidence. Maintenance-session MFA (MA.L2-3.7.5) is a good example. Purview tracks that control, but Entra Conditional Access is what enforces it, so the evidence should come from Microsoft Graph.</p>
+<p>Conditional Access policy JSON is deeply nested, and regex over nested JSON gets unreadable fast. So the fetcher evaluates each policy and writes a small flat summary next to the raw data. The validator only checks a handful of flags, and an auditor can still see the original policy.</p>
+<figure><pre class="code"><code># Evidence source
+GET https://graph.microsoft.com/v1.0/identity/conditionalAccess/policies
+
+# Flat summary the fetcher writes for each qualifying policy
+&quot;policy_state&quot;: &quot;enabled&quot;
+&quot;mfa_required&quot;: true
+&quot;external_network_scoped&quot;: true
+&quot;session_termination_enabled&quot;: true
+
+# Validator (ECMAScript)
+&quot;policy_state&quot;:\s*&quot;enabled&quot;[\s\S]*?&quot;mfa_required&quot;:\s*true[\s\S]*?
+&quot;external_network_scoped&quot;:\s*true[\s\S]*?&quot;session_termination_enabled&quot;:\s*true
+
+# Rule: match count = 1  -&gt;  PASS</code></pre><figcaption>One chained validator covers both objectives of MA.L2-3.7.5: MFA for nonlocal maintenance, and terminating those sessions.</figcaption></figure>
+<h2>Was it worth 320 records?</h2>
+<p>It's more to maintain than practice-level narratives. But every objective now points to a specific answer and the evidence behind it, and that's what an assessor actually asks for.</p>
+
+<nav class="pn" aria-label="More posts"><a class="prev" href="../blog/validators-before-the-fetcher.html"><small>Previous</small><strong>Writing the validators before the fetcher</strong></a><a class="next" href="../blog/repeatable-client-onboarding.html"><small>Next</small><strong>Turning client onboarding into a repeatable plan</strong></a></nav>
+</article></div>
+</main>
+<footer class="site-foot"><div class="wrap">
+  <span>© 2026 Bruce Weygandt</span>
+  <a href="mailto:bruce.weyg@gmail.com">email</a>
+  <a href="https://linkedin.com/in/bruce-weygandt" target="_blank" rel="noopener">linkedin</a>
+</div></footer>
+<script>(function(){
+var root=document.documentElement, btns=document.querySelectorAll('.theme-toggle');
+function sync(){var dark=root.getAttribute('data-theme')==='dark';
+  btns.forEach(function(b){b.setAttribute('aria-label',dark?'Switch to light mode':'Switch to dark mode');b.setAttribute('aria-pressed',dark?'true':'false');});}
+btns.forEach(function(b){b.addEventListener('click',function(){
+  var next=root.getAttribute('data-theme')==='dark'?'light':'dark';
+  root.setAttribute('data-theme',next);try{localStorage.setItem('bw-theme',next)}catch(e){}sync();});});
+sync();})();</script>
+
+</body>
+</html>

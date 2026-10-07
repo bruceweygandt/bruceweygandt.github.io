@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Bruce Weygandt</title>
+<title>Blog | Bruce Weygandt</title>
 <meta name="description" content="Bruce Weygandt, Forward Deployed Engineer at Paramify. Notes on FedRAMP 20x, CMMC, evidence fetchers, and validators.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -11,33 +11,36 @@
 <script>(function(){var t=null;try{t=localStorage.getItem('bw-theme')}catch(e){}
 if(t!=='light'&&t!=='dark'){t=window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}
 document.documentElement.setAttribute('data-theme',t)})();</script>
-<link rel="stylesheet" href="assets/styles.css">
+<link rel="stylesheet" href="../assets/styles.css">
 </head>
 <body>
 <header class="site-head"><div class="wrap">
-  <a class="name" href="index.html">Bruce Weygandt</a>
-  <nav aria-label="Site"><a href="index.html" aria-current="page">Home</a><a href="blog/index.html">Blog</a><a href="about.html">About</a><button class="theme-toggle" type="button" aria-label="Switch to dark mode" title="Switch theme">
+  <a class="name" href="../index.html">Bruce Weygandt</a>
+  <nav aria-label="Site"><a href="../index.html">Home</a><a href="../blog/index.html" aria-current="page">Blog</a><a href="../about.html">About</a><button class="theme-toggle" type="button" aria-label="Switch to dark mode" title="Switch theme">
 <svg class="i-moon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5a8.5 8.5 0 1 0 11 11z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
 <svg class="i-sun" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
 </button></nav>
 </div></header>
 <main>
 <div class="wrap">
-<h1>Compliance engineering, written down.</h1>
-<p>I'm a Forward Deployed Engineer at Paramify. Most of my time goes into building the Python fetchers and validators that prove FedRAMP 20x and CMMC controls with machine-readable evidence. The rest goes into working with clients as they get ready for assessments.</p>
-<p>This is where I write up what I've built and what I learned building it. More <a href="about.html">about me</a>, or start with the posts below.</p>
-<h2>Recent posts</h2>
+<h1>Blog</h1>
+<p class="muted">Write-ups of projects from my work: evidence fetchers, validators, framework mapping, and the tools I build along the way. Client names and system details are left out.</p>
 <ul class="posts">
-  <li><div class="row"><a href="blog/validators-before-the-fetcher.html">Writing the validators before the fetcher</a><span class="mins">3 min</span></div>
+  <li><div class="row"><a href="../blog/validators-before-the-fetcher.html">Writing the validators before the fetcher</a><span class="mins">3 min</span></div>
     <p class="dek">How I scoped a Google Workspace evidence fetcher for FedRAMP 20x by starting from the 23 checks it had to pass.</p></li>
-  <li><div class="row"><a href="blog/cmmc-one-objective-at-a-time.html">CMMC Level 2, one assessment objective at a time</a><span class="mins">2 min</span></div>
+  <li><div class="row"><a href="../blog/cmmc-one-objective-at-a-time.html">CMMC Level 2, one assessment objective at a time</a><span class="mins">2 min</span></div>
     <p class="dek">Building about 320 capabilities for a client on Microsoft 365 GCC High, and why the extra records were worth it.</p></li>
-  <li><div class="row"><a href="blog/repeatable-client-onboarding.html">Turning client onboarding into a repeatable plan</a><span class="mins">2 min</span></div>
+  <li><div class="row"><a href="../blog/repeatable-client-onboarding.html">Turning client onboarding into a repeatable plan</a><span class="mins">2 min</span></div>
     <p class="dek">A three-tab workbook and a chain of Claude skills that answer the same three questions for every new FedRAMP 20x client.</p></li>
-  <li><div class="row"><a href="blog/one-set-of-controls-three-frameworks.html">One set of controls, three frameworks</a><span class="mins">2 min</span></div>
+  <li><div class="row"><a href="../blog/one-set-of-controls-three-frameworks.html">One set of controls, three frameworks</a><span class="mins">2 min</span></div>
     <p class="dek">Mapping NIST CSF 2.0, Japan's ISMAP, and FedRAMP's new identifiers onto capabilities that already exist.</p></li>
+  <li><div class="row"><a href="../blog/scanner-exports-that-import-cleanly.html">Notes from making scanner exports import cleanly</a><span class="mins">2 min</span></div>
+    <p class="dek">What I found building intake presets for Fortify, Qualys, Grype, and SentinelOne.</p></li>
+  <li><div class="row"><a href="../blog/fedramp-json-schemas.html">Working with FedRAMP's new JSON schemas</a><span class="mins">2 min</span></div>
+    <p class="dek">Fitting change requests into the Significant Change Notification schema, and building a viewer for Security Decision Records.</p></li>
+  <li><div class="row"><a href="../blog/a-knowledge-base-that-audits-itself.html">A knowledge base that audits itself</a><span class="mins">2 min</span></div>
+    <p class="dek">Building internal tools on the Claude API, and the guardrails I put around them.</p></li>
 </ul>
-<a class="more" href="blog/index.html">All 7 posts</a>
 </div>
 </main>
 <footer class="site-foot"><div class="wrap">

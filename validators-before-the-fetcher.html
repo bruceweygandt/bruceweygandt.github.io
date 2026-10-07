@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Writing the validators before the fetcher | Bruce Weygandt</title>
+<meta name="description" content="How I scoped a Google Workspace evidence fetcher for FedRAMP 20x by starting from the 23 checks it had to pass.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script>(function(){var t=null;try{t=localStorage.getItem('bw-theme')}catch(e){}
+if(t!=='light'&&t!=='dark'){t=window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}
+document.documentElement.setAttribute('data-theme',t)})();</script>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<header class="site-head"><div class="wrap">
+  <a class="name" href="../index.html">Bruce Weygandt</a>
+  <nav aria-label="Site"><a href="../index.html">Home</a><a href="../blog/index.html" aria-current="page">Blog</a><a href="../about.html">About</a><button class="theme-toggle" type="button" aria-label="Switch to dark mode" title="Switch theme">
+<svg class="i-moon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5a8.5 8.5 0 1 0 11 11z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+<svg class="i-sun" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+</button></nav>
+</div></header>
+<main>
+<div class="wrap"><article>
+<a class="back" href="../blog/index.html">All posts</a>
+<h1>Writing the validators before the fetcher</h1>
+<p class="meta">FedRAMP 20x, Evidence fetchers, Google Workspace. 3 min read.</p>
+<p class="dek-lead">How I scoped a Google Workspace evidence fetcher for FedRAMP 20x by starting from the 23 checks it had to pass.</p>
+
+<p>The usual way to build an evidence fetcher is to pull everything an API offers and work out later what proves what. On a Google Workspace fetcher for KSI-IAM and KSI-SVC, I went the other way and wrote the validators first.</p>
+<h2>Why start from the end</h2>
+<p>FedRAMP 20x asks for persistent, machine-readable validation. A validator is a regex over JSON with a pass rule, so it tells you exactly which fields you need and nothing more.</p>
+<p>Google Workspace holds a lot of identity posture: MFA enforcement, admin roles, session and sharing policies. Its admin APIs don't take simple API keys, though, and the easy request to an administrator is "give me broad admin scopes." I didn't want to make that request.</p>
+<h2>Tracing 23 checks back to the API</h2>
+<p>I broke KSI-IAM and KSI-SVC down to their Rev 5 controls, then to the Workspace settings that implement them. That produced 23 validators. For each one I recorded the regex, the pass rule, the summary field it reads, the raw JSON path, the API call, and the OAuth scope that call needs. That traceability matrix turned out to be the most useful thing the project produced.</p>
+<p>Two things fell out of it. An audit scope I'd assumed I needed wasn't used by any validator, so it went. Another scope only supported one optional check, so it became optional. The request dropped from eight scopes to six required and one optional.</p>
+<figure><pre class="code"><code># Required (read-only)
+cloud-identity.policies.readonly
+admin.directory.user.readonly
+admin.directory.rolemanagement.readonly
+admin.directory.orgunit.readonly
+admin.directory.domain.readonly
+admin.reports.usage.readonly
+
+# Optional: only for the OAuth-grant inventory check
+admin.directory.token.readonly
+
+# Dropped: no validator uses it
+# admin.reports.audit.readonly</code></pre><figcaption>The final scope set. Every line maps to at least one validator.</figcaption></figure>
+<h2>Things I chose not to fake</h2>
+<p>Several SVC indicators are inherited from Google's own FedRAMP authorization. Fetching data for them would look thorough and prove nothing, so they point to Google's attestation instead.</p>
+<p>Just-in-time privileged access has no native Workspace feature at all. That one is written down as a gap rather than forced into a pass.</p>
+<h2>Asking for access</h2>
+<p>The last piece was the request itself. I wrote two versions: one where the administrator sets up the service account and hands it off, and one built around a 30-minute pairing session. Both keep credentials out of email and chat, and both recommend Workload Identity Federation over a long-lived key.</p>
+<h2>What I'd tell someone starting a fetcher</h2>
+<p>Write the checks first. The access request, the shape of the fetcher, and the conversation with the assessor all get easier when every field you collect already has a validator waiting for it.</p>
+
+<nav class="pn" aria-label="More posts"><a class="next" href="../blog/cmmc-one-objective-at-a-time.html"><small>Next</small><strong>CMMC Level 2, one assessment objective at a time</strong></a></nav>
+</article></div>
+</main>
+<footer class="site-foot"><div class="wrap">
+  <span>© 2026 Bruce Weygandt</span>
+  <a href="mailto:bruce.weyg@gmail.com">email</a>
+  <a href="https://linkedin.com/in/bruce-weygandt" target="_blank" rel="noopener">linkedin</a>
+</div></footer>
+<script>(function(){
+var root=document.documentElement, btns=document.querySelectorAll('.theme-toggle');
+function sync(){var dark=root.getAttribute('data-theme')==='dark';
+  btns.forEach(function(b){b.setAttribute('aria-label',dark?'Switch to light mode':'Switch to dark mode');b.setAttribute('aria-pressed',dark?'true':'false');});}
+btns.forEach(function(b){b.addEventListener('click',function(){
+  var next=root.getAttribute('data-theme')==='dark'?'light':'dark';
+  root.setAttribute('data-theme',next);try{localStorage.setItem('bw-theme',next)}catch(e){}sync();});});
+sync();})();</script>
+
+</body>
+</html>

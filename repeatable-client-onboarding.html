@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Turning client onboarding into a repeatable plan | Bruce Weygandt</title>
+<meta name="description" content="A three-tab workbook and a chain of Claude skills that answer the same three questions for every new FedRAMP 20x client.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script>(function(){var t=null;try{t=localStorage.getItem('bw-theme')}catch(e){}
+if(t!=='light'&&t!=='dark'){t=window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}
+document.documentElement.setAttribute('data-theme',t)})();</script>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<header class="site-head"><div class="wrap">
+  <a class="name" href="../index.html">Bruce Weygandt</a>
+  <nav aria-label="Site"><a href="../index.html">Home</a><a href="../blog/index.html" aria-current="page">Blog</a><a href="../about.html">About</a><button class="theme-toggle" type="button" aria-label="Switch to dark mode" title="Switch theme">
+<svg class="i-moon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5a8.5 8.5 0 1 0 11 11z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+<svg class="i-sun" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+</button></nav>
+</div></header>
+<main>
+<div class="wrap"><article>
+<a class="back" href="../blog/index.html">All posts</a>
+<h1>Turning client onboarding into a repeatable plan</h1>
+<p class="meta">FedRAMP 20x, Claude Agent Skills, Client onboarding. 2 min read.</p>
+<p class="dek-lead">A three-tab workbook and a chain of Claude skills that answer the same three questions for every new FedRAMP 20x client.</p>
+
+<p>Every new FedRAMP 20x client I work with starts with the same three questions. Which KSIs do their capabilities cover? Which systems do we need to connect, and with what access? Which validators will prove it to an assessor? Answering them by hand was slow, and the result looked different every time.</p>
+<p>So I built a fetcher plan: a workbook with three tabs, and a set of Claude skills that fill it from the client's Solution Capability export.</p>
+<h2>Systems</h2>
+<p>One row per source system the client's capabilities imply. It lists the API surface, how authentication works, the read-only permissions to request, which existing fetchers already cover it, and what still needs to be built. The permissions column is written so it can go straight into an access request.</p>
+<h2>Coverage</h2>
+<p>One row per capability and KSI pair. The KSI statement is copied word for word from fedramp.gov, so the client and the assessor are reading the same sentence.</p>
+<p>Each row gets one of four verdicts: covered, partial, not covered, or not automatable. That last one matters. Some indicators are better proven by a policy or an attestation, and the plan should say so instead of promising a fetcher.</p>
+<h2>Validators</h2>
+<p>For each evidence set, a small group of validators covering completeness, configuration, and integrity. Every row has a regex with named groups, a pass rule, a plain statement written from an assessor's point of view, and a column for what the validator does not prove. That last column gets asked about more than any other.</p>
+<figure><pre class="code"><code>evidence_set:    entra_conditional_access
+validator:       MFA required for all privileged roles
+kind:            configuration
+polarity:        must_match
+anchor_field:    summary.privileged_roles_without_mfa
+regex:           &quot;privileged_roles_without_mfa&quot;:\s*(?&lt;gap&gt;\d+)
+rule:            gap == 0
+statement:       Every privileged directory role is covered by an
+                 enabled Conditional Access policy requiring MFA.
+does_not_prove:  That break-glass accounts are monitored.</code></pre><figcaption>An illustrative row, not taken from a client, showing the fields every validator carries.</figcaption></figure>
+<h2>Why a chain of skills</h2>
+<p>The tabs depend on each other, so an orchestrator skill always runs them in the same order: systems, then coverage, then validators. What comes out is a first draft a person reviews, not a final answer. The first client I ran it for was on Azure Government, and we started from a reviewable plan instead of a blank spreadsheet.</p>
+
+<nav class="pn" aria-label="More posts"><a class="prev" href="../blog/cmmc-one-objective-at-a-time.html"><small>Previous</small><strong>CMMC Level 2, one assessment objective at a time</strong></a><a class="next" href="../blog/one-set-of-controls-three-frameworks.html"><small>Next</small><strong>One set of controls, three frameworks</strong></a></nav>
+</article></div>
+</main>
+<footer class="site-foot"><div class="wrap">
+  <span>© 2026 Bruce Weygandt</span>
+  <a href="mailto:bruce.weyg@gmail.com">email</a>
+  <a href="https://linkedin.com/in/bruce-weygandt" target="_blank" rel="noopener">linkedin</a>
+</div></footer>
+<script>(function(){
+var root=document.documentElement, btns=document.querySelectorAll('.theme-toggle');
+function sync(){var dark=root.getAttribute('data-theme')==='dark';
+  btns.forEach(function(b){b.setAttribute('aria-label',dark?'Switch to light mode':'Switch to dark mode');b.setAttribute('aria-pressed',dark?'true':'false');});}
+btns.forEach(function(b){b.addEventListener('click',function(){
+  var next=root.getAttribute('data-theme')==='dark'?'light':'dark';
+  root.setAttribute('data-theme',next);try{localStorage.setItem('bw-theme',next)}catch(e){}sync();});});
+sync();})();</script>
+
+</body>
+</html>
