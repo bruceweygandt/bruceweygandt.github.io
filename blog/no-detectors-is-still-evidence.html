@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>When “no detectors” is still valid evidence | Bruce Weygandt</title>
+<meta name="description" content="My first fetcher in paramify-fetchers, and the question every fetcher has to answer: what does an empty result mean?">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script>(function(){var t=null;try{t=localStorage.getItem('bw-theme')}catch(e){}
+if(t!=='light'&&t!=='dark'){t=window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}
+document.documentElement.setAttribute('data-theme',t)})();</script>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<header class="site-head"><div class="wrap">
+  <a class="name" href="../index.html">Bruce Weygandt</a>
+  <nav aria-label="Site"><a href="../index.html">Home</a><a href="../blog/index.html" aria-current="page">Blog</a><a href="../about.html">About</a><button class="theme-toggle" type="button" aria-label="Switch to dark mode" title="Switch theme">
+<svg class="i-moon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5a8.5 8.5 0 1 0 11 11z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+<svg class="i-sun" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+</button></nav>
+</div></header>
+<main>
+<div class="wrap"><article>
+<a class="back" href="../blog/index.html">All posts</a>
+<h1>When “no detectors” is still valid evidence</h1>
+<p class="meta">AWS, Evidence fetchers, Threat detection. 3 min read.</p>
+<p class="dek-lead">My first fetcher in paramify-fetchers, and the question every fetcher has to answer: what does an empty result mean?</p>
+
+<p>My first contribution to <a href="https://github.com/paramify/paramify-fetchers" target="_blank" rel="noopener">paramify-fetchers</a> was a fetcher for AWS GuardDuty findings. The repo already had a fetcher for GuardDuty's detector configuration. This one lists the findings themselves, so threat-detection evidence shows what GuardDuty actually saw, not only that it was switched on. It maps to KSI-SVC-EIS and KSI-MLA-RVL.</p>
+<h2>A window, not a history</h2>
+<p>The fetcher lists each detector, asks for findings updated within a lookback window (seven days by default), and expands each one: severity, type, resource, account, region, and whether it has been archived. It finishes with a summary of counts by severity, by type, and active versus archived.</p>
+<figure><pre class="code"><code>aws guardduty list-detectors
+aws guardduty list-findings   # updatedAt &gt;= now - lookback_days
+aws guardduty get-findings    # full detail for each finding ID</code></pre><figcaption>The three calls, per region and account.</figcaption></figure>
+<p>It keeps no state between runs. Each run is a fresh snapshot of the window, so there's no local file to lose or carry between environments, and the evidence stays recent without anyone pruning it. Region and profile are optional targets, so the same fetcher fans out across accounts using whatever identity the runner already has. It holds no secrets of its own.</p>
+<h2>What does nothing mean?</h2>
+<p>The interesting decision was about empty results. There are three ways to get nothing back from GuardDuty:</p>
+<ul>
+<li>GuardDuty isn't enabled in the region, so there are no detectors.</li>
+<li>Detectors exist, but nothing was updated in the window.</li>
+<li>The API call failed, usually because the role lacks a permission.</li>
+</ul>
+<p>The first two are facts about the environment, and the fetcher records them as valid evidence. An empty detector list is the evidence that GuardDuty is off, which is exactly what a validator downstream needs in order to fail it. If the fetcher crashed instead, a gap in the environment would look like a problem with the tooling, and the finding would never reach the people who need to fix it.</p>
+<p>The third is different. A permission error says nothing about the environment, so the fetcher logs it as a failure rather than quietly reporting zero detectors. Only GuardDuty's own "not enabled" response is translated into an empty result.</p>
+<h2>Same question, opposite answer</h2>
+<p>The rule flips for vulnerability reports. There, an empty file fails the run, because intake would read it as "every issue is resolved." I wrote about that in <a href="../blog/vulnerability-reports-from-the-api.html">Vulnerability evidence straight from the scanner</a>.</p>
+<p>Both rules come from asking who reads the output next and what they will conclude from an empty result. A validator can turn "no detectors" into a clear fail. An issue intake would turn "no findings" into a false all-clear. The fetcher's job is to make sure nothing means the same thing to its reader as it does in the environment.</p>
+<p>Teammates have refined the fetcher since I first merged it, which is how a shared repo should work.</p>
+
+<nav class="pn" aria-label="More posts"><a class="prev" href="../blog/vulnerability-reports-from-the-api.html"><small>Previous</small><strong>Vulnerability evidence straight from the scanner</strong></a><a class="next" href="../blog/client-calls-into-tickets.html"><small>Next</small><strong>Turning client calls into tickets, with a person in the loop</strong></a></nav>
+</article></div>
+</main>
+<footer class="site-foot"><div class="wrap">
+  <span>© 2026 Bruce Weygandt</span>
+  <a href="mailto:bruce.weyg@gmail.com">email</a>
+  <a href="https://linkedin.com/in/bruce-weygandt" target="_blank" rel="noopener">linkedin</a>
+</div></footer>
+<script>(function(){
+var root=document.documentElement, btns=document.querySelectorAll('.theme-toggle');
+function sync(){var dark=root.getAttribute('data-theme')==='dark';
+  btns.forEach(function(b){b.setAttribute('aria-label',dark?'Switch to light mode':'Switch to dark mode');b.setAttribute('aria-pressed',dark?'true':'false');});}
+btns.forEach(function(b){b.addEventListener('click',function(){
+  var next=root.getAttribute('data-theme')==='dark'?'light':'dark';
+  root.setAttribute('data-theme',next);try{localStorage.setItem('bw-theme',next)}catch(e){}sync();});});
+sync();})();</script>
+
+</body>
+</html>

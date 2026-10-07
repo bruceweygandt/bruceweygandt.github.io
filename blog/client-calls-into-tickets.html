@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Turning client calls into tickets, with a person in the loop | Bruce Weygandt</title>
+<meta name="description" content="Scheduled Claude skills that pull bug reports and feature requests out of recorded client calls, and why the first version had too much autonomy.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script>(function(){var t=null;try{t=localStorage.getItem('bw-theme')}catch(e){}
+if(t!=='light'&&t!=='dark'){t=window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}
+document.documentElement.setAttribute('data-theme',t)})();</script>
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+<header class="site-head"><div class="wrap">
+  <a class="name" href="../index.html">Bruce Weygandt</a>
+  <nav aria-label="Site"><a href="../index.html">Home</a><a href="../blog/index.html" aria-current="page">Blog</a><a href="../about.html">About</a><button class="theme-toggle" type="button" aria-label="Switch to dark mode" title="Switch theme">
+<svg class="i-moon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5a8.5 8.5 0 1 0 11 11z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+<svg class="i-sun" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+</button></nav>
+</div></header>
+<main>
+<div class="wrap"><article>
+<a class="back" href="../blog/index.html">All posts</a>
+<h1>Turning client calls into tickets, with a person in the loop</h1>
+<p class="meta">Claude Agent Skills, Automation, Customer success. 2 min read.</p>
+<p class="dek-lead">Scheduled Claude skills that pull bug reports and feature requests out of recorded client calls, and why the first version had too much autonomy.</p>
+
+<p>Clients mention bugs and feature ideas on calls all the time, usually in passing and halfway through a conversation about something else. Our calls are recorded and transcribed, but a transcript nobody rereads doesn't fix anything. I built Claude skills to close that gap.</p>
+<h2>Bugs, in the format support already uses</h2>
+<p>The bug skill runs on a schedule, reads the calls and meetings from the past 72 hours, and pulls out anything a client described as broken. Each one is posted to a Slack channel, formatted to match the bug report template our support team already uses in Zendesk: description, location, whether it's reproducible, timestamp, environment, steps, expected versus actual behavior, and evidence.</p>
+<p>Calls rarely cover all of that. When a field isn't stated, the skill doesn't fill it in. It turns the gaps into a short checklist for the account's CSM to confirm. A ticket with an honest "unknown" is more useful than one with a plausible guess.</p>
+<p>There's also a draft mode: a CSM can paste rough notes or a transcript excerpt and get back a report in the same format.</p>
+<h2>The first version did too much</h2>
+<p>The first version created Zendesk tickets directly, with no one approving them. It worked, in the sense that tickets appeared. But a model reading transcripts will sometimes take a question for a bug, or file the same issue twice from two calls, and every one of those became a ticket someone had to triage and close.</p>
+<p>Now the skill only posts to Slack. A teammate reacts with 🧠 to create the ticket or 💀 to dismiss it, and a small Google Apps Script backend handles the ticket. Review costs one click, and the person clicking knows the client.</p>
+<h2>Feature requests, counted</h2>
+<p>A second skill does the same for feature requests, with two differences. It only covers current customers, since requests from prospects and pilots go through a separate process. And it stamps each request with how many times it has come up before, so the product team sees demand rather than a list of one-off asks. It's informational and doesn't create tickets anywhere.</p>
+<h2>What I'd keep</h2>
+<p>Let the model do the reading and the formatting, and leave the decision to file with a person. The automation saves the hours spent rewatching calls, and the reaction keeps the ticket queue trustworthy.</p>
+
+<nav class="pn" aria-label="More posts"><a class="prev" href="../blog/no-detectors-is-still-evidence.html"><small>Previous</small><strong>When “no detectors” is still valid evidence</strong></a><a class="next" href="../blog/validators-before-the-fetcher.html"><small>Next</small><strong>Writing the validators before the fetcher</strong></a></nav>
+</article></div>
+</main>
+<footer class="site-foot"><div class="wrap">
+  <span>© 2026 Bruce Weygandt</span>
+  <a href="mailto:bruce.weyg@gmail.com">email</a>
+  <a href="https://linkedin.com/in/bruce-weygandt" target="_blank" rel="noopener">linkedin</a>
+</div></footer>
+<script>(function(){
+var root=document.documentElement, btns=document.querySelectorAll('.theme-toggle');
+function sync(){var dark=root.getAttribute('data-theme')==='dark';
+  btns.forEach(function(b){b.setAttribute('aria-label',dark?'Switch to light mode':'Switch to dark mode');b.setAttribute('aria-pressed',dark?'true':'false');});}
+btns.forEach(function(b){b.addEventListener('click',function(){
+  var next=root.getAttribute('data-theme')==='dark'?'light':'dark';
+  root.setAttribute('data-theme',next);try{localStorage.setItem('bw-theme',next)}catch(e){}sync();});});
+sync();})();</script>
+
+</body>
+</html>
